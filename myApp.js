@@ -15,7 +15,7 @@ require('dotenv').config();
 // as `MONGO_URI`. Connect to the database using `mongoose.connect(<Your URI>)`
 
 const mongoose = require('mongoose');
-mongoose.connect(MONGO_URI);
+mongoose.connect(process.env.MONGO_URI);
 
 /** # SCHEMAS and MODELS #
 /*  ====================== */
@@ -42,7 +42,14 @@ mongoose.connect(MONGO_URI);
 
 // <Your code here >
 
-var Person /* = <Your Model> */
+const PersonPrototype = {
+  name: 'String',
+  age: 'Number',
+  favoriteFoods: [String],
+}
+
+const personSchema = new mongoose.Schema(PersonPrototype);
+const Person = mongoose.model('Person', personSchema);
 
 // **Note**: Glitch is a real server, and in real servers interactions with
 // the db are placed in handler functions, to be called when some event happens
@@ -59,6 +66,7 @@ var Person /* = <Your Model> */
 //   if(error) return done(error);
 //   done(null, result);
 // };
+
 
 /** # [C]RUD part I - CREATE #
 /*  ========================== */
