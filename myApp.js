@@ -116,10 +116,16 @@ var createAndSavePerson = function(done) {
 // Create many people using `Model.create()`, using the function argument
 // 'arrayOfPeople'.
 
+
 var createManyPeople = function(arrayOfPeople, done) {
-
-    done(null/*, data*/);
-
+  Person.create(arrayOfPeople, (err, data) => {
+    if (err) {
+      return done(err);
+    }
+    if (data) {
+      return done(null, data);
+    }
+  })
 };
 
 /** # C[R]UD part II - READ #
