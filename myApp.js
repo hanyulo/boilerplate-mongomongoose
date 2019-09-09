@@ -87,7 +87,7 @@ const Person = mongoose.model('Person', personSchema);
 const person = new Person({
   name: 'Han',
   age: '25',
-  favoriteFoods: ['hamburger', 'sandwitch'],
+  favoriteFoods: ['omelet', 'sandwitch'],
 })
 
 var createAndSavePerson = function(done) {
@@ -147,6 +147,7 @@ var findPeopleByName = function(personName, done) {
       return done(err);
     }
     if (docs) {
+      console.log('docs: ', docs)
       return done(null, docs);
     }
   })
@@ -162,9 +163,16 @@ var findPeopleByName = function(personName, done) {
 // argument `food` as search key
 
 var findOneByFood = function(food, done) {
-
-  done(null/*, data*/);
-
+  Person.findOne({
+    favoriteFoods: food,
+  }, (err, docs) => {
+    if (err) {
+      return done(err);
+    }
+    if (docs) {
+      return done(null, docs);
+    }
+  })
 };
 
 /** 7) Use `Model.findById()` */
@@ -177,9 +185,16 @@ var findOneByFood = function(food, done) {
 // Use the function argument 'personId' as search key.
 
 var findPersonById = function(personId, done) {
-
-  done(null/*, data*/);
-
+  Person.findOne({
+    _id: personId,
+  }, (err, doc) => {
+    if (err) {
+      return done(err);
+    }
+    if (docs) {
+      return done(null, doc);
+    }
+  })
 };
 
 /** # CR[U]D part III - UPDATE #
@@ -210,7 +225,35 @@ var findPersonById = function(personId, done) {
 var findEditThenSave = function(personId, done) {
   var foodToAdd = 'hamburger';
 
-  done(null/*, data*/);
+  Person.findOne({
+    _id: personId,
+  }, (err, doc) => {
+    if (err) {
+      return done(err);
+    }
+    if (doc) {
+      doc.favoriteFoods = [ ...doc.favoriteFoods, foodToAdd ];
+      doc.save()
+        .then((product) => {
+          done(null, product);
+        })
+        .catch((err) => {
+          return done(err);
+        })
+    }
+
+    //     (err, product) => {
+    //       if (err) {
+    //         return done(err);
+    //       }
+    //       return done(null, product);
+    //     })
+    //     return done(null, docs);
+    //   }
+    // }
+
+  // done(null/*, data*/);
+  });
 };
 
 /** 9) New Update : Use `findOneAndUpdate()` */
