@@ -271,10 +271,15 @@ var findEditThenSave = function(personId, done) {
 // to `findOneAndUpdate()`. By default the method
 // passes the unmodified object to its callback.
 
-var findAndUpdate = function(personName, done) {
+var findAndUpdate = async function(personName, done) {
   var ageToSet = 20;
 
-  done(null/*, data*/);
+  const filter = { name: personName };
+  const update = { age: ageToSet };
+
+  const newDoc = await Person.findOneAndUpdate(filter, update, { new: true });
+
+  done(null, newDoc);
 };
 
 /** # CRU[D] part IV - DELETE #
@@ -288,9 +293,15 @@ var findAndUpdate = function(personName, done) {
 // As usual, use the function argument `personId` as search key.
 
 var removeById = function(personId, done) {
-
-  done(null/*, data*/);
-
+  function callback(err, foundDoc) {
+    if (err) {
+      return done(err);
+    }
+    if (foundDoc) {
+      done(null, foundDoc);
+    }
+  }
+  Person.findByIdAndRemove(personId, callback);
 };
 
 /** 11) Delete many People */
@@ -305,8 +316,15 @@ var removeById = function(personId, done) {
 
 var removeManyPeople = function(done) {
   var nameToRemove = "Mary";
-
-  done(null/*, data*/);
+  Person.remove()
+    .then((product) => {
+      done(null, product)
+    })
+    .catch((err) => {
+      if (err) {
+        done(err)
+      }
+    })
 };
 
 /** # C[R]UD part V -  More about Queries #
@@ -329,8 +347,23 @@ var removeManyPeople = function(done) {
 
 var queryChain = function(done) {
   var foodToSearch = "burrito";
-
-  done(null/*, data*/);
+  const filter = { favoriteFoods: foodToSearch };
+  const callback = (err, doc) => {
+    console.log('-------test---------')
+    console.log('-------test---------')
+    console.log('doc: ', doc)
+    if (err) {
+      return done(err);
+    }
+    if (doc) {
+      return done(null, doc);
+    }
+  }
+  Person.find(filter)
+    .sort({ name: 'asc' })
+    .limit(2)
+    .select('name favoriteFoods')
+    .exec(callback)
 };
 
 /** **Well Done !!**
